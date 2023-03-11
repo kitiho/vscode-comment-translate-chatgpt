@@ -1,7 +1,6 @@
 
 import axios from 'axios';
-const querystring = require('querystring');
-import isChinese from 'is-chinese';
+import * as isChinese from 'is-chinese';
 import { workspace } from 'vscode';
 import { ITranslate, ITranslateOptions } from 'comment-translate-manager';
 
