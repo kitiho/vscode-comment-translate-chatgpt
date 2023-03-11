@@ -1,7 +1,7 @@
 
 import axios from 'axios';
 const querystring = require('querystring');
-
+import isChinese from 'is-chinese';
 import { workspace } from 'vscode';
 import { ITranslate, ITranslateOptions } from 'comment-translate-manager';
 
@@ -59,7 +59,11 @@ export class ChatGPTTranslate implements ITranslate {
     }
 
     async translate(content: string, { to = 'auto' }: ITranslateOptions) {
-        const api_key = '';
+
+        if(isChinese(content)){
+            return content;
+        }
+
         const url = `https://api.openai.com/v1/chat/completions`;
 
         if(!this._defaultOption.authKey) {
@@ -86,7 +90,7 @@ export class ChatGPTTranslate implements ITranslate {
         
         const headers = {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${api_key}`,
+            Authorization: `Bearer ${this._defaultOption.authKey}`,
         };
 
         let res = await axios.post(url,body,{
