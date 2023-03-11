@@ -2,7 +2,7 @@
   "name": "chatgpt-comment-translate",
   "displayName": "chatgpt-comment-translate",
   "description": "chatgpt translate source for comment-translate",
-  "version": "0.0.3",
+  "version": "1.0.0",
   "publisher": "kitiho",
   "engines": {
     "vscode": "^1.63.0"
@@ -78,4 +78,4 @@
     "comment-translate-manager": "^0.0.2",
     "querystring": "^0.2.1"
   }
-}
+};
