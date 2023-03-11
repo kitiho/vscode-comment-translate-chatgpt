@@ -1,6 +1,5 @@
 
 import axios from 'axios';
-import * as isChinese from 'is-chinese';
 import { workspace } from 'vscode';
 import { ITranslate, ITranslateOptions } from 'comment-translate-manager';
 
@@ -10,6 +9,7 @@ const langMaps: Map<string, string> = new Map([
     ['zh-CN', 'ZH'],
     ['zh-TW', 'ZH'],
 ]);
+// 你好吗
 
 function convertLang(src: string) {
     if (langMaps.has(src)) {
@@ -27,12 +27,6 @@ export function getConfig<T>(key: string): T | undefined {
 
 interface ChatGPTTranslateOption {
     authKey?: string;
-}
-interface Response {
-    translations: {
-        'detected_source_language': string;
-        text: string;
-    }[];
 }
 
 export class ChatGPTTranslate implements ITranslate {
@@ -58,10 +52,6 @@ export class ChatGPTTranslate implements ITranslate {
     }
 
     async translate(content: string, { to = 'auto' }: ITranslateOptions) {
-
-        if(isChinese(content)){
-            return content;
-        }
 
         const url = `https://api.openai.com/v1/chat/completions`;
 
