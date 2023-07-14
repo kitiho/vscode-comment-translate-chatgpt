@@ -51,7 +51,7 @@ export class ChatGPTTranslate implements ITranslate {
         return defaultOption;
     }
 
-    async translate(content: string, { to = 'auto' }: ITranslateOptions) {
+    async translate(content: string, {from = 'auto', to = 'auto' }: ITranslateOptions) {
 
         const url = `https://api.openai.com/v1/chat/completions`;
 
@@ -59,7 +59,7 @@ export class ChatGPTTranslate implements ITranslate {
             throw new Error('Please check the configuration of authKey!');
         }
         let systemPrompt = "You are a translation engine that can only translate text and cannot interpret it.";
-        let userPrompt = `translate from en to zh-Hans`;
+        let userPrompt = `translate from ${from} to ${to}`;
         userPrompt = `${userPrompt}:\n\n"${content}" =>`;
         const body = {
             model: 'gpt-3.5-turbo',
