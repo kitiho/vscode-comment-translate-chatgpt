@@ -1,19 +1,22 @@
 {
 	"compilerOptions": {
-		"module": "commonjs",
+		"module": "esnext",
 		"target": "ES2020",
 		"outDir": "out",
 		"lib": [
 			"ES2020"
 		],
+		"moduleResolution": "node",
 		"sourceMap": true,
 		"rootDir": "src",
+		"esModuleInterop": true,
 		"strict": false   /* enable all strict type-checking options */
 		/* Additional Checks */
 		// "noImplicitReturns": true, /* Report error when not all code paths in function return a value. */
 		// "noFallthroughCasesInSwitch": true, /* Report errors for fallthrough cases in switch statement. */
 		// "noUnusedParameters": true,  /* Report errors on unused parameters. */
 	},
+	"include": ["./src/*"],
 	"exclude": [
 		"node_modules",
 		".vscode-test"
