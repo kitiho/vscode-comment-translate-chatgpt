@@ -36,6 +36,8 @@ interface ChatGPTTranslateOption {
     accessToken?: string;
     useMode?: UseMode;
     reverseProxyUrl?: string;
+    conversationId?: string;
+    parentMessageId?: string;
 }
 
 export class ChatGPTTranslate implements ITranslate {
@@ -58,7 +60,10 @@ export class ChatGPTTranslate implements ITranslate {
             authKey: getConfig<string>('authKey'),
             accessToken: getConfig<string>('accessToken'),
             useMode: getConfig<UseMode>('useMode'),
-            reverseProxyUrl: getConfig<string>('reverseProxyUrl')
+            reverseProxyUrl: getConfig<string>('reverseProxyUrl'),
+            conversationId: getConfig<string>('conversationId'),
+            parentMessageId: getConfig<string>('parentMessageId'),
+
         };
         return defaultOption;
     }
@@ -71,14 +76,20 @@ export class ChatGPTTranslate implements ITranslate {
             throw new Error('Please check the configuration of reverseProxyUrl!');
         }
 
+        if (!!this._defaultOption.conversationId !== !!this._defaultOption.parentMessageId) {
+            throw new Error(
+              'ConversationId and parentMessageId must both be set or both be undefined.'
+            );
+          }
+
         const api = new ChatGPTUnofficialProxyAPI({
             accessToken: this._defaultOption.accessToken,
             apiReverseProxyUrl: this._defaultOption.reverseProxyUrl,
           });
 
-        let userPrompt = `translate from en to zh-Hans`;
-        userPrompt = `${userPrompt}:\n\n"${content}" =>`;
-        const res = await api.sendMessage(userPrompt);
+        let userPrompt = `translate from en to zh-Hans, return content only`;
+        userPrompt = `${userPrompt}:\n"${content}"`;
+        const res = await api.sendMessage(userPrompt, {conversationId: this._defaultOption.conversationId, parentMessageId: this._defaultOption.parentMessageId});
         
         let targetTxt = res.text;
 
@@ -88,6 +99,7 @@ export class ChatGPTTranslate implements ITranslate {
         if (targetTxt.endsWith('"') || targetTxt.endsWith("」")) {
             targetTxt = targetTxt.slice(0, -1);
         }
+        
         return targetTxt;
     }
 
