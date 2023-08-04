@@ -67,6 +67,16 @@
             "order": 3,
             "type": "string",
             "markdownDescription": "Calling the unofficial ChatGPT service URL.[Details](https://github.com/transitive-bullshit/chatgpt-api#reverse-proxy)"
+          },
+          "chatgptTranslate.conversationId": {
+            "order": 4,
+            "type": "string",
+            "markdownDescription": "If you do not provide a conversationId, a new conversationId will be generated each time you perform a translation, leading to the creation of a new conversation.To obtain an existing conversationId in OpenAI."
+          },
+          "chatgptTranslate.parentMessageId": {
+            "order": 5,
+            "type": "string",
+            "markdownDescription": "If you provide a conversationId, the chatGPT API requires a parentMessageId to be present.To obtain an existing parentMessageId in OpenAI."
           }
         }
       }
