@@ -1,9 +1,15 @@
 
-import axios from 'axios';
+import {default as axios} from 'axios';
 import { workspace } from 'vscode';
 import { ITranslate, ITranslateOptions } from 'comment-translate-manager';
+import {ChatGPTUnofficialProxyAPI} from 'chatgpt';
 
 const PREFIXCONFIG = 'chatgptTranslate';
+
+enum UseMode {
+    openAI = 'openAI',
+    unofficialProxy = 'unofficialProxy'
+}
 
 const langMaps: Map<string, string> = new Map([
     ['zh-CN', 'ZH'],
@@ -27,6 +33,11 @@ export function getConfig<T>(key: string): T | undefined {
 
 interface ChatGPTTranslateOption {
     authKey?: string;
+    accessToken?: string;
+    useMode?: UseMode;
+    reverseProxyUrl?: string;
+    conversationId?: string;
+    parentMessageId?: string;
 }
 
 export class ChatGPTTranslate implements ITranslate {
@@ -47,11 +58,63 @@ export class ChatGPTTranslate implements ITranslate {
     createOption() {
         const defaultOption:ChatGPTTranslateOption = {
             authKey: getConfig<string>('authKey'),
+            accessToken: getConfig<string>('accessToken'),
+            useMode: getConfig<UseMode>('useMode'),
+            reverseProxyUrl: getConfig<string>('reverseProxyUrl'),
+            conversationId: getConfig<string>('conversationId'),
+            parentMessageId: getConfig<string>('parentMessageId'),
+
         };
         return defaultOption;
     }
 
-    async translate(content: string, { to = 'auto' }: ITranslateOptions) {
+    async translateFromChatGPTUnofficialProxy(content: string) {
+        if (!this._defaultOption.accessToken) {
+            throw new Error('Please check the configuration of accessToken!');
+        }
+        if (!this._defaultOption.reverseProxyUrl) {
+            throw new Error('Please check the configuration of reverseProxyUrl!');
+        }
+
+        if (!!this._defaultOption.conversationId !== !!this._defaultOption.parentMessageId) {
+            throw new Error(
+              'ConversationId and parentMessageId must both be set or both be undefined.'
+            );
+          }
+
+        const api = new ChatGPTUnofficialProxyAPI({
+            accessToken: this._defaultOption.accessToken,
+            apiReverseProxyUrl: this._defaultOption.reverseProxyUrl,
+          });
+
+        let userPrompt = `translate from en to zh-Hans, return content only`;
+        userPrompt = `${userPrompt}:\n"${content}"`;
+        const res = await api.sendMessage(userPrompt, {conversationId: this._defaultOption.conversationId, parentMessageId: this._defaultOption.parentMessageId});
+        
+        let targetTxt = res.text;
+
+        if (targetTxt.startsWith('"') || targetTxt.startsWith("「")) {
+            targetTxt = targetTxt.slice(1);
+        }
+        if (targetTxt.endsWith('"') || targetTxt.endsWith("」")) {
+            targetTxt = targetTxt.slice(0, -1);
+        }
+        
+        return targetTxt;
+    }
+
+    async translate(content: string, options: ITranslateOptions) {
+        if (this._defaultOption.useMode === UseMode.openAI) {
+            return this.translateFromOpenAI(content, options);
+        } else if (this._defaultOption.useMode === UseMode.unofficialProxy) {
+            return this.translateFromChatGPTUnofficialProxy(content);
+        } else {
+            throw new Error('Please check the configuration of useMode!');
+        }
+    }
+
+    // TODO: 使用 chatgpt 模块的 ChatGPTAPI 类重构？
+    async translateFromOpenAI(content: string, { to = 'auto' }: ITranslateOptions) {
 
         const url = `https://api.openai.com/v1/chat/completions`;
 
@@ -99,6 +162,9 @@ export class ChatGPTTranslate implements ITranslate {
 
     link(content: string, { to = 'auto' }: ITranslateOptions) {
         let str = `https://api.openai.com/v1/chat/completions/${convertLang(to)}/${encodeURIComponent(content)}`;
+        if (this._defaultOption.useMode === UseMode.unofficialProxy) {
+            str = this._defaultOption.reverseProxyUrl as string;
+        }
         return `[ChatGPT](${str})`;
     }
 

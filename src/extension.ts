@@ -1,3 +1,5 @@
+import 'node-get-random-values';
+import './fetch-polyfill';
 import { ITranslateRegistry } from 'comment-translate-manager';
 import * as vscode from 'vscode';
 import { ChatGPTTranslate } from './chatgptTranslate';
