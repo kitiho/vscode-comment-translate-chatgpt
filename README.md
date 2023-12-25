@@ -23,3 +23,5 @@ Please install '[comment-translate](https://github.com/intellism/vscode-comment-
 This extension contributes the following settings:
 
 * `chatgptTranslate.authKey`: set to `authKey` to request
+* `chatgptTranslate.apiAddress`: set as the requested address
+* `chatgptTranslate.model`: customizing the model configuration

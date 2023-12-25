@@ -41,6 +41,16 @@
           "chatgptTranslate.authKey": {
             "type": "string",
             "markdownDescription": "You need an authentication key to access to the API.[Accessing the API](https://openai.com)"
+          },
+          "chatgptTranslate.apiAddress": {
+            "type": "string",
+            "default": "https://api.openai.com/v1/chat/completions",
+            "markdownDescription": "Custom API interface address"
+          },
+          "chatgptTranslate.model": {
+            "type": "string",
+            "default": "gpt-3.5-turbo",
+            "markdownDescription": "Custom model"
           }
         }
       }

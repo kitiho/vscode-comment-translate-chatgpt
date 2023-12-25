@@ -27,6 +27,8 @@ export function getConfig<T>(key: string): T | undefined {
 
 interface ChatGPTTranslateOption {
     authKey?: string;
+    apiAddress?: string;
+    model?: string;
 }
 
 export class ChatGPTTranslate implements ITranslate {
@@ -47,13 +49,17 @@ export class ChatGPTTranslate implements ITranslate {
     createOption() {
         const defaultOption:ChatGPTTranslateOption = {
             authKey: getConfig<string>('authKey'),
+            apiAddress: getConfig<string>('apiAddress'),
+            model: getConfig<string>('model')
         };
         return defaultOption;
     }
 
     async translate(content: string, { to = 'auto' }: ITranslateOptions) {
 
-        const url = `https://api.openai.com/v1/chat/completions`;
+        // const url = `https://api.openai.com/v1/chat/completions`;
+        const url = this._defaultOption.apiAddress;
+
 
         if(!this._defaultOption.authKey) {
             throw new Error('Please check the configuration of authKey!');
@@ -62,7 +68,7 @@ export class ChatGPTTranslate implements ITranslate {
         let userPrompt = `translate from en to zh-Hans`;
         userPrompt = `${userPrompt}:\n\n"${content}" =>`;
         const body = {
-            model: 'gpt-3.5-turbo',
+            model: this._defaultOption.model,
             temperature: 0,
             max_tokens: 1000,
             top_p: 1,
@@ -98,7 +104,7 @@ export class ChatGPTTranslate implements ITranslate {
 
 
     link(content: string, { to = 'auto' }: ITranslateOptions) {
-        let str = `https://api.openai.com/v1/chat/completions/${convertLang(to)}/${encodeURIComponent(content)}`;
+        let str = `${this._defaultOption.apiAddress}/${convertLang(to)}/${encodeURIComponent(content)}`;
         return `[ChatGPT](${str})`;
     }
 
