@@ -44,11 +44,13 @@
           },
           "chatgptTranslate.apiAddress": {
             "type": "string",
-            "default": "https://api.openai.com/v1/chat/completions"
+            "default": "https://api.openai.com/v1/chat/completions",
+            "markdownDescription": "Custom API interface address"
           },
           "chatgptTranslate.model": {
             "type": "string",
-            "default": "gpt-3.5-turbo"
+            "default": "gpt-3.5-turbo",
+            "markdownDescription": "Custom model"
           }
         }
       }
